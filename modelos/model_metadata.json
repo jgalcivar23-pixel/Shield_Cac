@@ -1,0 +1,65 @@
+{
+  "features": [
+    "humedad",
+    "Temperatura Media",
+    "Temperatura Minima",
+    "Temperatura Maxima",
+    "radiacion",
+    "viento",
+    "presion superficial",
+    "precipitacion",
+    "VPD",
+    "Delta_Temp",
+    "GDA_diario",
+    "GDA_Acumulado",
+    "NDVI_Sentinel",
+    "REIP_Sentinel",
+    "NDWI_Sentinel"
+  ],
+  "clases_monilia": [
+    "ALTO",
+    "MEDIO"
+  ],
+  "clases_phytophthora": [
+    "ALTO",
+    "BAJO",
+    "MEDIO"
+  ],
+  "n_train": 365,
+  "n_test": 92,
+  "fecha_entrenamiento": "2026-05-12T19:21:54.078631",
+  "importancia_monilia": {
+    "GDA_Acumulado": 0.002776090472192949,
+    "radiacion": 0.0029262039623568496,
+    "NDVI_Sentinel": 0.003198131630643126,
+    "NDWI_Sentinel": 0.004884761210715313,
+    "presion superficial": 0.0112810661061009,
+    "REIP_Sentinel": 0.01233462006517977,
+    "GDA_diario": 0.014300591951168456,
+    "Temperatura Media": 0.014791100653181878,
+    "precipitacion": 0.03185391213258355,
+    "viento": 0.037758459374962305,
+    "Temperatura Maxima": 0.05187405926941076,
+    "Delta_Temp": 0.11503042074500003,
+    "Temperatura Minima": 0.14308803072019108,
+    "VPD": 0.22946422130748984,
+    "humedad": 0.32443833039882325
+  },
+  "importancia_phytophthora": {
+    "GDA_Acumulado": 0.010427159245512303,
+    "NDVI_Sentinel": 0.015589266366653778,
+    "NDWI_Sentinel": 0.015885502795752224,
+    "presion superficial": 0.01603935543284583,
+    "Temperatura Media": 0.016934773380241634,
+    "GDA_diario": 0.021128639693004048,
+    "REIP_Sentinel": 0.023482874116087907,
+    "radiacion": 0.024315426251095076,
+    "viento": 0.03145827125427665,
+    "precipitacion": 0.036470311585092854,
+    "Temperatura Maxima": 0.07180643442349197,
+    "Temperatura Minima": 0.09270774379606939,
+    "VPD": 0.1699477225436362,
+    "humedad": 0.21481013775283392,
+    "Delta_Temp": 0.23899638136340617
+  }
+}
