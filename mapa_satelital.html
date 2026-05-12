@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_b909536604387bb44302e822d076b363 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+    <script src="https://cdn.jsdelivr.net/gh/python-visualization/folium@main/folium/templates/leaflet_heat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-dvf/0.3.0/leaflet-dvf.markers.min.js"></script>
+</head>
+<body>
+    
+    
+            <div class="folium-map" id="map_b909536604387bb44302e822d076b363" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_b909536604387bb44302e822d076b363 = L.map(
+                "map_b909536604387bb44302e822d076b363",
+                {
+                    center: [-0.1, -79.5],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 8,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_8acf56207b66d8efee4e21c86fedcf30 = L.tileLayer(
+                "https://mt1.google.com/vt/lyrs=y\u0026x={x}\u0026y={y}\u0026z={z}",
+                {
+  "minZoom": 0,
+  "maxZoom": 18,
+  "maxNativeZoom": 18,
+  "noWrap": false,
+  "attribution": "Google Satellite",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_8acf56207b66d8efee4e21c86fedcf30.addTo(map_b909536604387bb44302e822d076b363);
+        
+    
+            var tile_layer_a886bd4fffa1b3e61904bc7681a8350e = L.tileLayer(
+                "https://earthengine.googleapis.com/v1/projects/shield-agro-iot/maps/8dd9880eb7ecdeb4e7613c7a7329dbde-c3e5122f5712415e9c596292a2fee8cf/tiles/{z}/{x}/{y}",
+                {
+  "minZoom": 0,
+  "maxZoom": 18,
+  "maxNativeZoom": 18,
+  "noWrap": false,
+  "attribution": "Shield-Agro GEE Analysis",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 0.55,
+}
+
+            );
+        
+    
+            tile_layer_a886bd4fffa1b3e61904bc7681a8350e.addTo(map_b909536604387bb44302e822d076b363);
+        
+    
+            var heat_map_37b7ff004af42ebaca1bc6efde5b7c0c = L.heatLayer(
+                [[1.15, -78.85, 0.9], [0.55, -80.02, 0.9], [0.32, -79.45, 0.9], [-0.68, -80.08, 0.9], [-1.02, -80.45, 0.9], [-0.27, -79.46, 0.9]],
+                {
+  "minOpacity": 0.5,
+  "maxZoom": 18,
+  "radius": 40,
+  "blur": 25,
+}
+            );
+        
+    
+            heat_map_37b7ff004af42ebaca1bc6efde5b7c0c.addTo(map_b909536604387bb44302e822d076b363);
+        
+    
+            var regular_polygon_marker_ad4ad42e5408fb0679f9b96b27f00da6 = new L.RegularPolygonMarker(
+                [1.15, -78.85],
+                {
+  "stroke": true,
+  "color": "#2c3e50",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": true,
+  "fillColor": "#e74c3c",
+  "fillOpacity": 0.9,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+  "radius": 14,
+  "numberOfSides": 4,
+  "rotation": 45,
+}
+            ).addTo(map_b909536604387bb44302e822d076b363);
+        
+    
+        var popup_e8f065b0ff4640306dcb587168d0b454 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_d97b1dc848ee4a34d310f9d4624b4c84 = $(`<div id="html_d97b1dc848ee4a34d310f9d4624b4c84" style="width: 100.0%; height: 100.0%;">     <div style="font-family: 'Segoe UI', sans-serif; width: 260px; border-radius: 10px; border: 1px solid #ccc; background: white;">         <div style="background: #e74c3c; color: white; padding: 10px; border-radius: 10px 10px 0 0; text-align: center;">             <b style="font-size: 14px;">🛡️ SHIELD-AGRO: Esmeraldas-Norte</b>         </div>         <div style="padding: 12px; font-size: 12px; color: #333;">             <b>📍 Georreferencia:</b> 1.15, -78.85<br>             <b>🌱 Variedad:</b> Nacional<br>             <hr style="border: 0.5px solid #eee;">             <b>🌡️ Temp:</b> 30.5°C | <b>💧 HR:</b> 99%<br>             <b>📈 GDA Acumulados:</b> 180.0 °D<br>             <hr style="border: 0.5px solid #eee;">             <b style="color: #c0392b;">🍄 Riesgo Monilia:</b> ALTO<br>             <b style="color: #2980b9;">💧 Riesgo Phytophthora:</b> CRÍTICO<br>             <hr style="border: 0.5px solid #eee;">             <b>👤 Responsable:</b> Ing. Peña<br>             <div style="text-align: center; margin-top: 10px;">                 <a href="https://www.google.com/maps?q=1.15,-78.85" target="_blank"                     style="background: #2c3e50; color: white; padding: 5px 10px; text-decoration: none; border-radius: 5px;">Ir al Lote</a>             </div>         </div>     </div>     </div>`)[0];
+                popup_e8f065b0ff4640306dcb587168d0b454.setContent(html_d97b1dc848ee4a34d310f9d4624b4c84);
+            
+        
+
+        regular_polygon_marker_ad4ad42e5408fb0679f9b96b27f00da6.bindPopup(popup_e8f065b0ff4640306dcb587168d0b454)
+        ;
+
+        
+    
+    
+            regular_polygon_marker_ad4ad42e5408fb0679f9b96b27f00da6.bindTooltip(
+                `<div>
+                     Ver Trazabilidad: Esmeraldas-Norte
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var regular_polygon_marker_0fbcf103734a2ed4140160abc2ded26e = new L.RegularPolygonMarker(
+                [0.55, -80.02],
+                {
+  "stroke": true,
+  "color": "#2c3e50",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": true,
+  "fillColor": "#e74c3c",
+  "fillOpacity": 0.9,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+  "radius": 14,
+  "numberOfSides": 4,
+  "rotation": 45,
+}
+            ).addTo(map_b909536604387bb44302e822d076b363);
+        
+    
+        var popup_2d8f961c91390bc6b7e2c42d841da735 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_66086b15d158c122a8cd960c85930e5f = $(`<div id="html_66086b15d158c122a8cd960c85930e5f" style="width: 100.0%; height: 100.0%;">     <div style="font-family: 'Segoe UI', sans-serif; width: 260px; border-radius: 10px; border: 1px solid #ccc; background: white;">         <div style="background: #e74c3c; color: white; padding: 10px; border-radius: 10px 10px 0 0; text-align: center;">             <b style="font-size: 14px;">🛡️ SHIELD-AGRO: Muisne-Costa</b>         </div>         <div style="padding: 12px; font-size: 12px; color: #333;">             <b>📍 Georreferencia:</b> 0.55, -80.02<br>             <b>🌱 Variedad:</b> CCN-51<br>             <hr style="border: 0.5px solid #eee;">             <b>🌡️ Temp:</b> 28.6°C | <b>💧 HR:</b> 90%<br>             <b>📈 GDA Acumulados:</b> 151.5 °D<br>             <hr style="border: 0.5px solid #eee;">             <b style="color: #c0392b;">🍄 Riesgo Monilia:</b> ALTO<br>             <b style="color: #2980b9;">💧 Riesgo Phytophthora:</b> NORMAL<br>             <hr style="border: 0.5px solid #eee;">             <b>👤 Responsable:</b> Téc. Lucas<br>             <div style="text-align: center; margin-top: 10px;">                 <a href="https://www.google.com/maps?q=0.55,-80.02" target="_blank"                     style="background: #2c3e50; color: white; padding: 5px 10px; text-decoration: none; border-radius: 5px;">Ir al Lote</a>             </div>         </div>     </div>     </div>`)[0];
+                popup_2d8f961c91390bc6b7e2c42d841da735.setContent(html_66086b15d158c122a8cd960c85930e5f);
+            
+        
+
+        regular_polygon_marker_0fbcf103734a2ed4140160abc2ded26e.bindPopup(popup_2d8f961c91390bc6b7e2c42d841da735)
+        ;
+
+        
+    
+    
+            regular_polygon_marker_0fbcf103734a2ed4140160abc2ded26e.bindTooltip(
+                `<div>
+                     Ver Trazabilidad: Muisne-Costa
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var regular_polygon_marker_89cfff2f12c42556cb8f9d4097a1aa38 = new L.RegularPolygonMarker(
+                [0.32, -79.45],
+                {
+  "stroke": true,
+  "color": "#2c3e50",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": true,
+  "fillColor": "#e74c3c",
+  "fillOpacity": 0.9,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+  "radius": 14,
+  "numberOfSides": 4,
+  "rotation": 45,
+}
+            ).addTo(map_b909536604387bb44302e822d076b363);
+        
+    
+        var popup_0e5676767a233460505c5c4b6f3e4cf2 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_e79d258d2eea411a6fc62c8d5692cbf4 = $(`<div id="html_e79d258d2eea411a6fc62c8d5692cbf4" style="width: 100.0%; height: 100.0%;">     <div style="font-family: 'Segoe UI', sans-serif; width: 260px; border-radius: 10px; border: 1px solid #ccc; background: white;">         <div style="background: #e74c3c; color: white; padding: 10px; border-radius: 10px 10px 0 0; text-align: center;">             <b style="font-size: 14px;">🛡️ SHIELD-AGRO: Quinindé-Agro</b>         </div>         <div style="padding: 12px; font-size: 12px; color: #333;">             <b>📍 Georreferencia:</b> 0.32, -79.45<br>             <b>🌱 Variedad:</b> CCN-51<br>             <hr style="border: 0.5px solid #eee;">             <b>🌡️ Temp:</b> 32.8°C | <b>💧 HR:</b> 99%<br>             <b>📈 GDA Acumulados:</b> 214.5 °D<br>             <hr style="border: 0.5px solid #eee;">             <b style="color: #c0392b;">🍄 Riesgo Monilia:</b> ALTO<br>             <b style="color: #2980b9;">💧 Riesgo Phytophthora:</b> CRÍTICO<br>             <hr style="border: 0.5px solid #eee;">             <b>👤 Responsable:</b> Ing. Gabriel<br>             <div style="text-align: center; margin-top: 10px;">                 <a href="https://www.google.com/maps?q=0.32,-79.45" target="_blank"                     style="background: #2c3e50; color: white; padding: 5px 10px; text-decoration: none; border-radius: 5px;">Ir al Lote</a>             </div>         </div>     </div>     </div>`)[0];
+                popup_0e5676767a233460505c5c4b6f3e4cf2.setContent(html_e79d258d2eea411a6fc62c8d5692cbf4);
+            
+        
+
+        regular_polygon_marker_89cfff2f12c42556cb8f9d4097a1aa38.bindPopup(popup_0e5676767a233460505c5c4b6f3e4cf2)
+        ;
+
+        
+    
+    
+            regular_polygon_marker_89cfff2f12c42556cb8f9d4097a1aa38.bindTooltip(
+                `<div>
+                     Ver Trazabilidad: Quinindé-Agro
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var regular_polygon_marker_d7e8970c87c1324d1adf037dfdc8a2bb = new L.RegularPolygonMarker(
+                [-0.68, -80.08],
+                {
+  "stroke": true,
+  "color": "#2c3e50",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": true,
+  "fillColor": "#e74c3c",
+  "fillOpacity": 0.9,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+  "radius": 14,
+  "numberOfSides": 4,
+  "rotation": 45,
+}
+            ).addTo(map_b909536604387bb44302e822d076b363);
+        
+    
+        var popup_eb18fae992cf1fd8fda5a6958d0801d3 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_986fb072783f8b3d786a313f735ca77b = $(`<div id="html_986fb072783f8b3d786a313f735ca77b" style="width: 100.0%; height: 100.0%;">     <div style="font-family: 'Segoe UI', sans-serif; width: 260px; border-radius: 10px; border: 1px solid #ccc; background: white;">         <div style="background: #e74c3c; color: white; padding: 10px; border-radius: 10px 10px 0 0; text-align: center;">             <b style="font-size: 14px;">🛡️ SHIELD-AGRO: Chone-Centro</b>         </div>         <div style="padding: 12px; font-size: 12px; color: #333;">             <b>📍 Georreferencia:</b> -0.68, -80.08<br>             <b>🌱 Variedad:</b> Nacional<br>             <hr style="border: 0.5px solid #eee;">             <b>🌡️ Temp:</b> 30.9°C | <b>💧 HR:</b> 99%<br>             <b>📈 GDA Acumulados:</b> 186.0 °D<br>             <hr style="border: 0.5px solid #eee;">             <b style="color: #c0392b;">🍄 Riesgo Monilia:</b> ALTO<br>             <b style="color: #2980b9;">💧 Riesgo Phytophthora:</b> CRÍTICO<br>             <hr style="border: 0.5px solid #eee;">             <b>👤 Responsable:</b> Téc. Eduardo<br>             <div style="text-align: center; margin-top: 10px;">                 <a href="https://www.google.com/maps?q=-0.68,-80.08" target="_blank"                     style="background: #2c3e50; color: white; padding: 5px 10px; text-decoration: none; border-radius: 5px;">Ir al Lote</a>             </div>         </div>     </div>     </div>`)[0];
+                popup_eb18fae992cf1fd8fda5a6958d0801d3.setContent(html_986fb072783f8b3d786a313f735ca77b);
+            
+        
+
+        regular_polygon_marker_d7e8970c87c1324d1adf037dfdc8a2bb.bindPopup(popup_eb18fae992cf1fd8fda5a6958d0801d3)
+        ;
+
+        
+    
+    
+            regular_polygon_marker_d7e8970c87c1324d1adf037dfdc8a2bb.bindTooltip(
+                `<div>
+                     Ver Trazabilidad: Chone-Centro
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var regular_polygon_marker_f04d5933c2882c0dc2c95fdd32d85091 = new L.RegularPolygonMarker(
+                [-1.02, -80.45],
+                {
+  "stroke": true,
+  "color": "#2c3e50",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": true,
+  "fillColor": "#e74c3c",
+  "fillOpacity": 0.9,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+  "radius": 14,
+  "numberOfSides": 4,
+  "rotation": 45,
+}
+            ).addTo(map_b909536604387bb44302e822d076b363);
+        
+    
+        var popup_90f04d096b262cd4a141b3ff9d7879a8 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_950d916510afce897298533704bd20de = $(`<div id="html_950d916510afce897298533704bd20de" style="width: 100.0%; height: 100.0%;">     <div style="font-family: 'Segoe UI', sans-serif; width: 260px; border-radius: 10px; border: 1px solid #ccc; background: white;">         <div style="background: #e74c3c; color: white; padding: 10px; border-radius: 10px 10px 0 0; text-align: center;">             <b style="font-size: 14px;">🛡️ SHIELD-AGRO: Portoviejo-Valle</b>         </div>         <div style="padding: 12px; font-size: 12px; color: #333;">             <b>📍 Georreferencia:</b> -1.02, -80.45<br>             <b>🌱 Variedad:</b> Híbrido<br>             <hr style="border: 0.5px solid #eee;">             <b>🌡️ Temp:</b> 31.6°C | <b>💧 HR:</b> 98%<br>             <b>📈 GDA Acumulados:</b> 196.5 °D<br>             <hr style="border: 0.5px solid #eee;">             <b style="color: #c0392b;">🍄 Riesgo Monilia:</b> ALTO<br>             <b style="color: #2980b9;">💧 Riesgo Phytophthora:</b> CRÍTICO<br>             <hr style="border: 0.5px solid #eee;">             <b>👤 Responsable:</b> Ing. Estefanía<br>             <div style="text-align: center; margin-top: 10px;">                 <a href="https://www.google.com/maps?q=-1.02,-80.45" target="_blank"                     style="background: #2c3e50; color: white; padding: 5px 10px; text-decoration: none; border-radius: 5px;">Ir al Lote</a>             </div>         </div>     </div>     </div>`)[0];
+                popup_90f04d096b262cd4a141b3ff9d7879a8.setContent(html_950d916510afce897298533704bd20de);
+            
+        
+
+        regular_polygon_marker_f04d5933c2882c0dc2c95fdd32d85091.bindPopup(popup_90f04d096b262cd4a141b3ff9d7879a8)
+        ;
+
+        
+    
+    
+            regular_polygon_marker_f04d5933c2882c0dc2c95fdd32d85091.bindTooltip(
+                `<div>
+                     Ver Trazabilidad: Portoviejo-Valle
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var regular_polygon_marker_58985a1a53b0ae775b1ba3067d39ad92 = new L.RegularPolygonMarker(
+                [-0.27, -79.46],
+                {
+  "stroke": true,
+  "color": "#2c3e50",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": true,
+  "fillColor": "#e74c3c",
+  "fillOpacity": 0.9,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+  "radius": 14,
+  "numberOfSides": 4,
+  "rotation": 45,
+}
+            ).addTo(map_b909536604387bb44302e822d076b363);
+        
+    
+        var popup_0c5d73085f8c1ef47da9221a76f15fd9 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_ebb4a6cf4c18d3600d04fe6833de9caa = $(`<div id="html_ebb4a6cf4c18d3600d04fe6833de9caa" style="width: 100.0%; height: 100.0%;">     <div style="font-family: 'Segoe UI', sans-serif; width: 260px; border-radius: 10px; border: 1px solid #ccc; background: white;">         <div style="background: #e74c3c; color: white; padding: 10px; border-radius: 10px 10px 0 0; text-align: center;">             <b style="font-size: 14px;">🛡️ SHIELD-AGRO: El Carmen-Norte</b>         </div>         <div style="padding: 12px; font-size: 12px; color: #333;">             <b>📍 Georreferencia:</b> -0.27, -79.46<br>             <b>🌱 Variedad:</b> CCN-51<br>             <hr style="border: 0.5px solid #eee;">             <b>🌡️ Temp:</b> 30.1°C | <b>💧 HR:</b> 97%<br>             <b>📈 GDA Acumulados:</b> 174.0 °D<br>             <hr style="border: 0.5px solid #eee;">             <b style="color: #c0392b;">🍄 Riesgo Monilia:</b> ALTO<br>             <b style="color: #2980b9;">💧 Riesgo Phytophthora:</b> CRÍTICO<br>             <hr style="border: 0.5px solid #eee;">             <b>👤 Responsable:</b> Equipo Shield<br>             <div style="text-align: center; margin-top: 10px;">                 <a href="https://www.google.com/maps?q=-0.27,-79.46" target="_blank"                     style="background: #2c3e50; color: white; padding: 5px 10px; text-decoration: none; border-radius: 5px;">Ir al Lote</a>             </div>         </div>     </div>     </div>`)[0];
+                popup_0c5d73085f8c1ef47da9221a76f15fd9.setContent(html_ebb4a6cf4c18d3600d04fe6833de9caa);
+            
+        
+
+        regular_polygon_marker_58985a1a53b0ae775b1ba3067d39ad92.bindPopup(popup_0c5d73085f8c1ef47da9221a76f15fd9)
+        ;
+
+        
+    
+    
+            regular_polygon_marker_58985a1a53b0ae775b1ba3067d39ad92.bindTooltip(
+                `<div>
+                     Ver Trazabilidad: El Carmen-Norte
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var layer_control_54690e678b3dc8595ba416edce8c7ce8_layers = {
+                base_layers : {
+                    "Google Satellite (H\u00edbrido)" : tile_layer_8acf56207b66d8efee4e21c86fedcf30,
+                },
+                overlays :  {
+                    "Mapa de Riesgo Fitosanitario" : tile_layer_a886bd4fffa1b3e61904bc7681a8350e,
+                    "Zonas de Presi\u00f3n F\u00fangica" : heat_map_37b7ff004af42ebaca1bc6efde5b7c0c,
+                },
+            };
+            let layer_control_54690e678b3dc8595ba416edce8c7ce8 = L.control.layers(
+                layer_control_54690e678b3dc8595ba416edce8c7ce8_layers.base_layers,
+                layer_control_54690e678b3dc8595ba416edce8c7ce8_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": false,
+  "autoZIndex": true,
+}
+            ).addTo(map_b909536604387bb44302e822d076b363);
+
+        
+</script>
+</html>
