@@ -93,34 +93,37 @@ with pag1:
 
     st.divider()
 
-    # ── Sensores ESP32 en tiempo real ──
-    st.subheader("📡 Sensores en tiempo real — ESP32")
-    datos = leer_sensores()
+ # ── Sensores ESP32 en tiempo real ──
+st.subheader("📡 Sensores en tiempo real — ESP32")
+datos_raw = leer_sensores()
 
-    if datos:
-        s1, s2, s3, s4 = st.columns(4)
-        s1.metric("💧 Humedad Suelo", f"{datos['humedadSuelo']:.1f}%")
-        s2.metric("🌡️ Temperatura", f"{datos['tempAmb']:.1f}°C")
-        s3.metric("💦 Humedad Aire", f"{datos['humedadAmb']:.1f}%")
+# Extraer último registro de Firebase
+if datos_raw and isinstance(datos_raw, dict):
+    # Tomar el último valor guardado
+    ultimo_sensor = list(datos_raw.values())[-1]
+else:
+    ultimo_sensor = None
 
-        # Estado bomba con color
-        bomba = datos['bomba']
-        color_bomba = "#e74c3c" if bomba == "ON" else "#27ae60"
-        icono_bomba = "🟢 APAGADA" if bomba == "OFF" else "🔴 ENCENDIDA"
-        s4.metric("🚿 Bomba de riego", icono_bomba)
-
-        # Alerta si bomba encendida
-        if bomba == "ON":
-            st.warning("⚠️ Bomba de riego activada — humedad del suelo por debajo del 25%")
-        else:
-            st.success("✅ Humedad del suelo en niveles normales")
+if ultimo_sensor:
+    s1, s2, s3, s4 = st.columns(4)
+    s1.metric("💧 Humedad Suelo", f"{ultimo_sensor['humedadSuelo']:.1f}%")
+    s2.metric("🌡️ Temperatura", f"{ultimo_sensor['tempAmb']:.1f}°C")
+    s3.metric("💦 Humedad Aire", f"{ultimo_sensor['humedadAmb']:.1f}%")
+    bomba = ultimo_sensor['bomba']
+    icono_bomba = "🟢 APAGADA" if bomba == "OFF" else "🔴 ENCENDIDA"
+    s4.metric("🚿 Bomba de riego", icono_bomba)
+    if bomba == "ON":
+        st.warning("⚠️ Bomba activada — humedad del suelo por debajo del 25%")
     else:
-        st.markdown("""
-        <div style="background:#1e2530; border-left:4px solid #f39c12;
-                    border-radius:8px; padding:15px; color:#e6edf3">
-            ⚠️ Sensor desconectado o sin datos en este momento
-        </div>
-        """, unsafe_allow_html=True)
+        st.success("✅ Humedad del suelo en niveles normales")
+else:
+    st.markdown("""
+    <div style="background:#1e2530; border-left:4px solid #f39c12;
+                border-radius:8px; padding:15px; color:#e6edf3">
+        ⚠️ Sensor desconectado o sin datos
+    </div>
+    """, unsafe_allow_html=True)
+
 
     st.divider()
 
