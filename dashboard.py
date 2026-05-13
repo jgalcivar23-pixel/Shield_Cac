@@ -2,9 +2,9 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
-import matplotlib
 import joblib
 import numpy as np
+import requests
 
 st.set_page_config(
     page_title="Shield-Agro | Cacao Intelligence",
@@ -12,7 +12,6 @@ st.set_page_config(
     layout="wide"
 )
 
-# ── Estilo general ────────────────────────────────────────
 st.markdown("""
 <style>
     .block-container { padding-top: 1.5rem; }
@@ -24,12 +23,9 @@ st.markdown("""
 @st.cache_data
 def cargar_datos():
     df = pd.read_excel("Resultados_ShieldAgro (1).xlsx")
-    # Asegurar que la columna Fecha es datetime
     if df["Fecha"].dtype == "object":
-        # Si es string, convertir
         df["Fecha"] = pd.to_datetime(df["Fecha"], errors='coerce')
     elif not pd.api.types.is_datetime64_any_dtype(df["Fecha"]):
-        # Si son números, convertir como Excel dates
         df["Fecha"] = pd.to_datetime(df["Fecha"], unit="D", origin="1899-12-29")
     return df.sort_values("Fecha").reset_index(drop=True)
 
@@ -40,6 +36,14 @@ def cargar_modelos():
     le_m = joblib.load("modelos/le_monilia.pkl")
     le_p = joblib.load("modelos/le_phytophthora.pkl")
     return rf_m, rf_p, le_m, le_p
+
+def leer_sensores():
+    try:
+        url = "https://datos-esp32-69498-default-rtdb.firebaseio.com/sensores.json"
+        r = requests.get(url, timeout=5)
+        return r.json()
+    except:
+        return None
 
 df = cargar_datos()
 rf_m, rf_p, le_m, le_p = cargar_modelos()
@@ -57,28 +61,24 @@ COLORES = {"ALTO":"#e74c3c", "MEDIO":"#f39c12", "BAJO":"#27ae60",
 EMOJI = {"ALTO":"🔴", "MEDIO":"🟠", "BAJO":"🟢",
            "ALTA":"🔴", "MODERADA":"🟠", "BAJA":"🟢"}
 
-# ════════════════════════════════════════════════════════════
-# HEADER
-# ════════════════════════════════════════════════════════════
+# ── Header ────────────────────────────────────────────────
 st.markdown("# 🛡️ Shield-Agro | Cacao Intelligence")
 st.markdown("**Monitoreo fitosanitario con IA — Esmeraldas, Ecuador 2024–2025**")
 st.divider()
 
-# ════════════════════════════════════════════════════════════
-# PÁGINAS
-# ════════════════════════════════════════════════════════════
+# ── Tabs ──────────────────────────────────────────────────
 pag1, pag2, pag3 = st.tabs([
     "📊 Análisis de datos",
     "🎯 Predecir riesgo hoy",
     "🗺️ Mapa Satelital"
 ])
 
-# ════════════════════════════════════════════════════════════
+# ════════════════════════════════════════════════════════
 # PÁGINA 1 — ANÁLISIS
-# ════════════════════════════════════════════════════════════
+# ════════════════════════════════════════════════════════
 with pag1:
 
-    # Métricas rápidas arriba
+    # ── Predicción del último registro ──
     ultimo = df.iloc[-1]
     X_ult = np.array([[ultimo[f] for f in FEATURES]])
     pred_m_hoy = le_m.inverse_transform(rf_m.predict(X_ult))[0]
@@ -93,7 +93,38 @@ with pag1:
 
     st.divider()
 
-    # Gráfico 1 — Conteo de alertas
+    # ── Sensores ESP32 en tiempo real ──
+    st.subheader("📡 Sensores en tiempo real — ESP32")
+    datos = leer_sensores()
+
+    if datos:
+        s1, s2, s3, s4 = st.columns(4)
+        s1.metric("💧 Humedad Suelo", f"{datos['humedadSuelo']:.1f}%")
+        s2.metric("🌡️ Temperatura", f"{datos['tempAmb']:.1f}°C")
+        s3.metric("💦 Humedad Aire", f"{datos['humedadAmb']:.1f}%")
+
+        # Estado bomba con color
+        bomba = datos['bomba']
+        color_bomba = "#e74c3c" if bomba == "ON" else "#27ae60"
+        icono_bomba = "🟢 APAGADA" if bomba == "OFF" else "🔴 ENCENDIDA"
+        s4.metric("🚿 Bomba de riego", icono_bomba)
+
+        # Alerta si bomba encendida
+        if bomba == "ON":
+            st.warning("⚠️ Bomba de riego activada — humedad del suelo por debajo del 25%")
+        else:
+            st.success("✅ Humedad del suelo en niveles normales")
+    else:
+        st.markdown("""
+        <div style="background:#1e2530; border-left:4px solid #f39c12;
+                    border-radius:8px; padding:15px; color:#e6edf3">
+            ⚠️ Sensor desconectado o sin datos en este momento
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.divider()
+
+    # ── Gráfico 1 — Conteo de alertas ──
     st.subheader("¿Cuántos días hubo cada nivel de riesgo?")
     conteo = df["Alerta_Monilia"].value_counts()
 
@@ -115,7 +146,7 @@ with pag1:
 
     st.divider()
 
-    # Gráfico 2 — Tendencia últimos 60 días
+    # ── Gráfico 2 — Tendencia 60 días ──
     st.subheader("Tendencia de riesgo — últimos 60 días")
     ultimos = df.tail(60)
 
@@ -130,10 +161,8 @@ with pag1:
             ax2.scatter(ultimos[mask]["Fecha"],
                         ultimos[mask]["IFE_Monilia"],
                         color=color, label=nivel, s=25, alpha=0.9)
-    ax2.axhline(0.80, color="#e74c3c", linestyle="--",
-                linewidth=1, label="Umbral ALTO")
-    ax2.axhline(0.75, color="#f39c12", linestyle="--",
-                linewidth=1, label="Umbral MEDIO")
+    ax2.axhline(0.80, color="#e74c3c", linestyle="--", linewidth=1, label="Umbral ALTO")
+    ax2.axhline(0.75, color="#f39c12", linestyle="--", linewidth=1, label="Umbral MEDIO")
     ax2.tick_params(colors="white")
     ax2.set_ylabel("Nivel de riesgo", color="white")
     ax2.legend(facecolor="#21262d", labelcolor="white", fontsize=9)
@@ -143,7 +172,7 @@ with pag1:
 
     st.divider()
 
-    # Gráfico 3 — Lluvia vs Riesgo
+    # ── Gráfico 3 — Lluvia vs Riesgo ──
     st.subheader("🌧️ ¿Cómo afecta la lluvia al riesgo?")
     fig3, ax3 = plt.subplots(figsize=(9, 4))
     fig3.patch.set_facecolor("#0d1117")
@@ -162,9 +191,9 @@ with pag1:
     ax3.grid(alpha=0.15)
     st.pyplot(fig3)
 
-# ════════════════════════════════════════════════════════════
+# ════════════════════════════════════════════════════════
 # PÁGINA 2 — PREDICCIÓN
-# ════════════════════════════════════════════════════════════
+# ════════════════════════════════════════════════════════
 with pag2:
     st.subheader("🎯 Ingresa los datos de tu campo")
     st.caption("Mueve los controles y el modelo predice el riesgo en tiempo real")
@@ -244,9 +273,9 @@ with pag2:
         </div>
         """, unsafe_allow_html=True)
 
-# ════════════════════════════════════════════════════════════
+# ════════════════════════════════════════════════════════
 # PÁGINA 3 — MAPA
-# ════════════════════════════════════════════════════════════
+# ════════════════════════════════════════════════════════
 with pag3:
     st.subheader("🗺️ Mapa Satelital — Esmeraldas, Ecuador")
     st.caption("Análisis de índices espectrales NDVI · NDWI · REIP con Sentinel-2")
