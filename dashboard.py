@@ -19,12 +19,12 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# ── Carga de datos ────────────────────────────────────────
+# ── Carga ─────────────────────────────────────────────────
 @st.cache_data
 def cargar_datos():
     df = pd.read_excel("Resultados_ShieldAgro (1).xlsx")
     if df["Fecha"].dtype == "object":
-        df["Fecha"] = pd.to_datetime(df["Fecha"], errors='coerce')
+        df["Fecha"] = pd.to_datetime(df["Fecha"], errors="coerce")
     elif not pd.api.types.is_datetime64_any_dtype(df["Fecha"]):
         df["Fecha"] = pd.to_datetime(df["Fecha"], unit="D", origin="1899-12-29")
     return df.sort_values("Fecha").reset_index(drop=True)
@@ -41,9 +41,15 @@ def leer_sensores():
     try:
         url = "https://datos-esp32-69498-default-rtdb.firebaseio.com/sensores.json"
         r = requests.get(url, timeout=5)
-        return r.json()
+        datos_raw = r.json()
+        if datos_raw and isinstance(datos_raw, dict):
+            registros = list(datos_raw.values())
+            ultimo = registros[-1]
+            ultimos_25 = registros[-25:]
+            return ultimo, ultimos_25
+        return None, []
     except:
-        return None
+        return None, []
 
 df = cargar_datos()
 rf_m, rf_p, le_m, le_p = cargar_modelos()
@@ -56,29 +62,28 @@ FEATURES = [
     "NDVI_Sentinel", "REIP_Sentinel", "NDWI_Sentinel"
 ]
 
-COLORES = {"ALTO":"#e74c3c", "MEDIO":"#f39c12", "BAJO":"#27ae60",
-           "ALTA":"#e74c3c", "MODERADA":"#f39c12", "BAJA":"#27ae60"}
-EMOJI = {"ALTO":"🔴", "MEDIO":"🟠", "BAJO":"🟢",
-           "ALTA":"🔴", "MODERADA":"🟠", "BAJA":"🟢"}
+COLORES = {"ALTO":"#e74c3c","MEDIO":"#f39c12","BAJO":"#27ae60",
+           "ALTA":"#e74c3c","MODERADA":"#f39c12","BAJA":"#27ae60"}
+EMOJI = {"ALTO":"🔴","MEDIO":"🟠","BAJO":"🟢",
+           "ALTA":"🔴","MODERADA":"🟠","BAJA":"🟢"}
 
 # ── Header ────────────────────────────────────────────────
 st.markdown("# 🛡️ Shield-Agro | Cacao Intelligence")
 st.markdown("**Monitoreo fitosanitario con IA — Esmeraldas, Ecuador 2024–2025**")
 st.divider()
 
-# ── Tabs ──────────────────────────────────────────────────
-pag1, pag2, pag3 = st.tabs([
+# ── 4 Páginas ─────────────────────────────────────────────
+pag1, pag2, pag3, pag4 = st.tabs([
     "📊 Análisis de datos",
     "🎯 Predecir riesgo hoy",
+    "📡 Sensores ESP32",
     "🗺️ Mapa Satelital"
 ])
 
 # ════════════════════════════════════════════════════════
-# PÁGINA 1 — ANÁLISIS
+# PÁGINA 1 — ANÁLISIS ESMERALDAS 2024-2025
 # ════════════════════════════════════════════════════════
 with pag1:
-
-    # ── Predicción del último registro ──
     ultimo = df.iloc[-1]
     X_ult = np.array([[ultimo[f] for f in FEATURES]])
     pred_m_hoy = le_m.inverse_transform(rf_m.predict(X_ult))[0]
@@ -93,44 +98,9 @@ with pag1:
 
     st.divider()
 
- # ── Sensores ESP32 en tiempo real ──
-st.subheader("📡 Sensores en tiempo real — ESP32")
-datos_raw = leer_sensores()
-
-# Extraer último registro de Firebase
-if datos_raw and isinstance(datos_raw, dict):
-    # Tomar el último valor guardado
-    ultimo_sensor = list(datos_raw.values())[-1]
-else:
-    ultimo_sensor = None
-
-if ultimo_sensor:
-    s1, s2, s3, s4 = st.columns(4)
-    s1.metric("💧 Humedad Suelo", f"{ultimo_sensor['humedadSuelo']:.1f}%")
-    s2.metric("🌡️ Temperatura", f"{ultimo_sensor['tempAmb']:.1f}°C")
-    s3.metric("💦 Humedad Aire", f"{ultimo_sensor['humedadAmb']:.1f}%")
-    bomba = ultimo_sensor['bomba']
-    icono_bomba = "🟢 APAGADA" if bomba == "OFF" else "🔴 ENCENDIDA"
-    s4.metric("🚿 Bomba de riego", icono_bomba)
-    if bomba == "ON":
-        st.warning("⚠️ Bomba activada — humedad del suelo por debajo del 25%")
-    else:
-        st.success("✅ Humedad del suelo en niveles normales")
-else:
-    st.markdown("""
-    <div style="background:#1e2530; border-left:4px solid #f39c12;
-                border-radius:8px; padding:15px; color:#e6edf3">
-        ⚠️ Sensor desconectado o sin datos
-    </div>
-    """, unsafe_allow_html=True)
-
-
-    st.divider()
-
-    # ── Gráfico 1 — Conteo de alertas ──
+    # Gráfico 1 — Conteo alertas
     st.subheader("¿Cuántos días hubo cada nivel de riesgo?")
     conteo = df["Alerta_Monilia"].value_counts()
-
     fig1, ax1 = plt.subplots(figsize=(7, 4))
     fig1.patch.set_facecolor("#0d1117")
     ax1.set_facecolor("#0d1117")
@@ -149,10 +119,9 @@ else:
 
     st.divider()
 
-    # ── Gráfico 2 — Tendencia 60 días ──
-    st.subheader("Tendencia de riesgo — últimos 60 días")
+    # Gráfico 2 — Tendencia 60 días
+    st.subheader("📈 Tendencia de riesgo — últimos 60 días")
     ultimos = df.tail(60)
-
     fig2, ax2 = plt.subplots(figsize=(12, 4))
     fig2.patch.set_facecolor("#0d1117")
     ax2.set_facecolor("#0d1117")
@@ -175,7 +144,7 @@ else:
 
     st.divider()
 
-    # ── Gráfico 3 — Lluvia vs Riesgo ──
+    # Gráfico 3 — Lluvia vs Riesgo
     st.subheader("🌧️ ¿Cómo afecta la lluvia al riesgo?")
     fig3, ax3 = plt.subplots(figsize=(9, 4))
     fig3.patch.set_facecolor("#0d1117")
@@ -203,21 +172,14 @@ with pag2:
 
     ultimo = df.iloc[-1]
     col1, col2 = st.columns(2)
-
     with col1:
-        humedad = st.slider("💧 Humedad del aire (%)",
-                            60.0, 100.0, float(ultimo["humedad"]))
-        lluvia = st.slider("🌧️ Lluvia (mm)",
-                            0.0, 50.0, float(ultimo["precipitacion"]))
-        temp = st.slider("🌡️ Temperatura (°C)",
-                            20.0, 35.0, float(ultimo["Temperatura Media"]))
+        humedad = st.slider("💧 Humedad del aire (%)", 60.0, 100.0, float(ultimo["humedad"]))
+        lluvia = st.slider("🌧️ Lluvia (mm)", 0.0, 50.0, float(ultimo["precipitacion"]))
+        temp = st.slider("🌡️ Temperatura (°C)", 20.0, 35.0, float(ultimo["Temperatura Media"]))
     with col2:
-        viento = st.slider("💨 Viento (m/s)",
-                            0.5, 5.0, float(ultimo["viento"]))
-        vpd = st.slider("🌫️ Estrés hídrico (VPD)",
-                            0.1, 1.5, float(ultimo["VPD"]))
-        gda = st.slider("📊 GDA Acumulado",
-                            0.0, 550.0, float(ultimo["GDA_Acumulado"]))
+        viento = st.slider("💨 Viento (m/s)", 0.5, 5.0, float(ultimo["viento"]))
+        vpd = st.slider("🌫️ Estrés hídrico (VPD)", 0.1, 1.5, float(ultimo["VPD"]))
+        gda = st.slider("📊 GDA Acumulado", 0.0, 550.0, float(ultimo["GDA_Acumulado"]))
 
     X = np.array([[
         humedad, temp,
@@ -241,13 +203,12 @@ with pag2:
         "BAJO": "✅ Condiciones favorables hoy."
     }
     colores_bg = {
-        "ALTO": "#e74c3c", "MEDIO": "#f39c12", "BAJO": "#27ae60",
-        "ALTA": "#e74c3c", "MODERADA": "#f39c12", "BAJA": "#27ae60"
+        "ALTO":"#e74c3c","MEDIO":"#f39c12","BAJO":"#27ae60",
+        "ALTA":"#e74c3c","MODERADA":"#f39c12","BAJA":"#27ae60"
     }
 
     st.divider()
     r1, r2 = st.columns(2)
-
     with r1:
         color = colores_bg.get(pred_m, "#888")
         st.markdown(f"""
@@ -261,7 +222,6 @@ with pag2:
             </p>
         </div>
         """, unsafe_allow_html=True)
-
     with r2:
         color2 = colores_bg.get(pred_p, "#888")
         st.markdown(f"""
@@ -277,12 +237,98 @@ with pag2:
         """, unsafe_allow_html=True)
 
 # ════════════════════════════════════════════════════════
-# PÁGINA 3 — MAPA
+# PÁGINA 3 — SENSORES ESP32
 # ════════════════════════════════════════════════════════
 with pag3:
+    st.subheader("📡 Sensores en tiempo real — ESP32")
+    st.caption("Datos enviados desde campo cada 5 segundos")
+
+    ultimo_sensor, ultimos_25 = leer_sensores()
+
+    if ultimo_sensor:
+        # Métricas actuales
+        s1, s2, s3, s4 = st.columns(4)
+        s1.metric("💧 Humedad Suelo", f"{ultimo_sensor['humedadSuelo']:.1f}%")
+        s2.metric("🌡️ Temperatura", f"{ultimo_sensor['tempAmb']:.1f}°C")
+        s3.metric("💦 Humedad Aire", f"{ultimo_sensor['humedadAmb']:.1f}%")
+        bomba = ultimo_sensor['bomba']
+        s4.metric("🚿 Bomba de riego",
+                  "🟢 APAGADA" if bomba == "OFF" else "🔴 ENCENDIDA")
+
+        if bomba == "ON":
+            st.warning("⚠️ Bomba activada — humedad del suelo por debajo del 25%")
+        else:
+            st.success("✅ Humedad del suelo en niveles normales")
+
+        st.divider()
+
+        # Gráfico últimos 25 registros
+        if len(ultimos_25) > 1:
+            st.subheader("📊 Últimos 25 registros del sensor")
+            indices = list(range(1, len(ultimos_25) + 1))
+            hum_suelo = [r.get("humedadSuelo", 0) for r in ultimos_25]
+            hum_amb = [r.get("humedadAmb", 0) for r in ultimos_25]
+            temp_amb = [r.get("tempAmb", 0) for r in ultimos_25]
+
+            fig_s, (ax_a, ax_b) = plt.subplots(2, 1, figsize=(12, 7))
+            fig_s.patch.set_facecolor("#0d1117")
+
+            # Humedad suelo y aire
+            ax_a.set_facecolor("#0d1117")
+            ax_a.plot(indices, hum_suelo, color="#1abc9c",
+                      linewidth=2, marker="o", markersize=4, label="Humedad Suelo")
+            ax_a.plot(indices, hum_amb, color="#3498db",
+                      linewidth=2, marker="o", markersize=4, label="Humedad Aire")
+            ax_a.axhline(25, color="#e74c3c", linestyle="--",
+                         linewidth=1, label="Umbral bomba (25%)")
+            ax_a.set_ylabel("Humedad (%)", color="white")
+            ax_a.tick_params(colors="white")
+            ax_a.legend(facecolor="#21262d", labelcolor="white", fontsize=9)
+            ax_a.spines[:].set_visible(False)
+            ax_a.grid(alpha=0.15)
+
+            # Temperatura
+            ax_b.set_facecolor("#0d1117")
+            ax_b.plot(indices, temp_amb, color="#f39c12",
+                      linewidth=2, marker="o", markersize=4, label="Temperatura °C")
+            ax_b.set_ylabel("Temperatura (°C)", color="white")
+            ax_b.set_xlabel("Registro", color="white")
+            ax_b.tick_params(colors="white")
+            ax_b.legend(facecolor="#21262d", labelcolor="white", fontsize=9)
+            ax_b.spines[:].set_visible(False)
+            ax_b.grid(alpha=0.15)
+
+            plt.tight_layout()
+            st.pyplot(fig_s)
+
+        st.divider()
+
+        # Tabla últimos 25 registros
+        st.subheader("📋 Tabla de últimos 25 registros")
+        df_sensor = pd.DataFrame(ultimos_25)[
+            ["humedadSuelo","humedadAmb","tempAmb","bomba"]
+        ].rename(columns={
+            "humedadSuelo": "Humedad Suelo (%)",
+            "humedadAmb": "Humedad Aire (%)",
+            "tempAmb": "Temperatura (°C)",
+            "bomba": "Bomba"
+        })
+        st.dataframe(df_sensor, use_container_width=True)
+
+    else:
+        st.markdown("""
+        <div style="background:#1e2530; border-left:4px solid #f39c12;
+                    border-radius:8px; padding:20px; color:#e6edf3">
+            ⚠️ Sensor desconectado o sin datos en este momento
+        </div>
+        """, unsafe_allow_html=True)
+
+# ════════════════════════════════════════════════════════
+# PÁGINA 4 — MAPA
+# ════════════════════════════════════════════════════════
+with pag4:
     st.subheader("🗺️ Mapa Satelital — Esmeraldas, Ecuador")
     st.caption("Análisis de índices espectrales NDVI · NDWI · REIP con Sentinel-2")
-
     try:
         with open("mapa_satelital.html", "r", encoding="utf-8") as f:
             mapa_html = f.read()
