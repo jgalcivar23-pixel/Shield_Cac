@@ -24,8 +24,13 @@ st.markdown("""
 @st.cache_data
 def cargar_datos():
     df = pd.read_excel("Resultados_ShieldAgro (1).xlsx")
-    # Convertir números de Excel a fechas (Excel base date: 1899-12-30)
-    df["Fecha"] = pd.Timestamp("1899-12-30") + pd.to_timedelta(df["Fecha"], unit="D")
+    # Asegurar que la columna Fecha es datetime
+    if df["Fecha"].dtype == "object":
+        # Si es string, convertir
+        df["Fecha"] = pd.to_datetime(df["Fecha"], errors='coerce')
+    elif not pd.api.types.is_datetime64_any_dtype(df["Fecha"]):
+        # Si son números, convertir como Excel dates
+        df["Fecha"] = pd.to_datetime(df["Fecha"], unit="D", origin="1899-12-29")
     return df.sort_values("Fecha").reset_index(drop=True)
 
 @st.cache_resource
