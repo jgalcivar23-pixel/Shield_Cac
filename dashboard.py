@@ -24,7 +24,7 @@ st.markdown("""
 @st.cache_data
 def cargar_datos():
     df = pd.read_excel("Resultados_ShieldAgro (1).xlsx")
-    df["Fecha"] = pd.to_datetime(df["Fecha"], origin="1899-12-30", unit="D")
+    df["Fecha"] = pd.to_datetime(df["Fecha"], origin=pd.Timestamp("1899-12-30"), unit="D")
     return df.sort_values("Fecha").reset_index(drop=True)
 
 @st.cache_resource
